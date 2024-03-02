@@ -1,0 +1,88 @@
+-- REMOVING DASHES FROM A BANK SORTCODE
+
+update transactions
+set sort_code = replace(sort_code,'-','');
+
+-- OR
+
+select transaction_id,
+		account_number,
+        replace(sort_code,'-','') as sort_code,
+        bank
+from transactions;
+ 
+-- CREATE NEW COLUMN TO ALREADY EXISTING TABLE
+
+alter table transactions
+add column country_code char(2) not null;
+
+ 
+-- ADD SAME VALUES TO CREATED COLUMN TO AFFECT ALL ROWS
+
+update transactions
+set country_code =
+case 
+when country_code = '' then 'GB' 
+end;
+
+-- OR 
+
+select transaction_id,
+		account_number,
+        replace(sort_code,'-','') as sort_code,
+        bank, 
+        'GB' as country_code
+from transactions;
+
+
+-- CREATING A TEMPORARY TABLE TO OBTAIN REQUIRED OUTPUT
+with cte as
+(
+select transaction_id,
+		account_number,
+        replace(sort_code,'-','') as sort_code,
+        bank, 
+        'GB' as country_code
+from transactions
+)
+-- CREATING SCRIPT FOR CTE2
+select  c.transaction_id, 
+		c.country_code, 
+		s.check_digits, 
+        s.swift_code, 
+        c.sort_code, 
+        c.account_number
+from cte c
+join 
+swift_codes s on c.bank = s.bank;
+
+
+-- JOINING COLUMNS OF CTE2 
+with cte2 as
+(
+with cte as
+(
+select transaction_id,
+		account_number,
+        replace(sort_code,'-','') as sort_code,
+        bank, 
+        'GB' as country_code
+from transactions
+)
+select  c.transaction_id, 
+		c.country_code, 
+		s.check_digits, 
+        s.swift_code, 
+        c.sort_code, 
+        c.account_number
+from cte c
+join 
+swift_codes s on c.bank = s.bank
+)
+SELECT transaction_id, 
+		CONCAT(country_code,
+		check_digits,
+		swift_code,
+		Sort_code,
+		account_number) as iban
+FROM cte2;
