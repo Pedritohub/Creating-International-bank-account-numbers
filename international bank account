@@ -6,7 +6,7 @@ set sort_code = replace(sort_code,'-','');
 -- OR
 
 select transaction_id,
-		account_number,
+	account_number,
         replace(sort_code,'-','') as sort_code,
         bank
 from transactions;
@@ -28,7 +28,7 @@ end;
 -- OR 
 
 select transaction_id,
-		account_number,
+	account_number,
         replace(sort_code,'-','') as sort_code,
         bank, 
         'GB' as country_code
@@ -39,7 +39,7 @@ from transactions;
 with cte as
 (
 select transaction_id,
-		account_number,
+	account_number,
         replace(sort_code,'-','') as sort_code,
         bank, 
         'GB' as country_code
@@ -47,8 +47,8 @@ from transactions
 )
 -- CREATING SCRIPT FOR CTE2
 select  c.transaction_id, 
-		c.country_code, 
-		s.check_digits, 
+	c.country_code, 
+	s.check_digits, 
         s.swift_code, 
         c.sort_code, 
         c.account_number
@@ -63,15 +63,15 @@ with cte2 as
 with cte as
 (
 select transaction_id,
-		account_number,
+	account_number,
         replace(sort_code,'-','') as sort_code,
         bank, 
         'GB' as country_code
 from transactions
 )
 select  c.transaction_id, 
-		c.country_code, 
-		s.check_digits, 
+	c.country_code, 
+	s.check_digits, 
         s.swift_code, 
         c.sort_code, 
         c.account_number
